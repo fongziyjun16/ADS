@@ -19,6 +19,8 @@ public class AVLTree {
         }
     }
 
+    // insert operation
+
     public void Insert(int key) {
         root = insert(root, key);
     }
@@ -32,8 +34,61 @@ public class AVLTree {
         } else {
             root.right = insert(root.right, key);
         }
+        if (!isBalance(root)) {
+            // not balance, then keep balance
+            if (getBalanceFactor(root) > 0) { // LL or LR
+                if (getBalanceFactor(root.left) > 0) { // LL
+                    root = rightRotate(root);
+                } else { // LR
+                    root.left = leftRotate(root.left);
+                    root = rightRotate(root);
+                }
+            } else { // RR or RL
+                if (getBalanceFactor(root.right) < 0) { // RR
+                    root = leftRotate(root);
+                } else { // RL
+                    root.right = rightRotate(root.right);
+                    root = leftRotate(root);
+                }
+            }
+        }
+        updateHeight(root);
         return root;
     }
+
+    private boolean isBalance(AVLTreeNode root) {
+        return getBalanceFactor(root) <= 1;
+    }
+
+    private int getBalanceFactor(AVLTreeNode root) {
+        return Math.abs((root.left == null ? 0 : root.left.height) - (root.right == null ? 0 : root.right.height));
+    }
+
+    private void updateHeight(AVLTreeNode root) {
+        root.height = Math.max(root.left == null ? 0 : root.left.height, root.right == null ? 0 : root.right.height) + 1;
+    }
+
+    private AVLTreeNode rightRotate(AVLTreeNode root) {
+        AVLTreeNode newRoot = root.left;
+        AVLTreeNode leftRight = root.left.right;
+        newRoot.right = root;
+        root.left = leftRight;
+        updateHeight(root);
+        updateHeight(newRoot);
+        return newRoot;
+    }
+
+    private AVLTreeNode leftRotate(AVLTreeNode root) {
+        AVLTreeNode newRoot = root.right;
+        AVLTreeNode rightLeft = root.right.left;
+        newRoot.left = root;
+        root.right = rightLeft;
+        updateHeight(root);
+        updateHeight(newRoot);
+        return newRoot;
+    }
+
+    // delete operation
 
     public void Delete(int key) {
 
@@ -118,5 +173,6 @@ class AVLTreeNode {
 
     public AVLTreeNode(int key) {
         this.key = key;
+        height = 1;
     }
 }
