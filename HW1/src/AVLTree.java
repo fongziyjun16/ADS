@@ -34,6 +34,11 @@ public class AVLTree {
         } else {
             root.right = insert(root.right, key);
         }
+        root = keepBalance(root);
+        return root;
+    }
+
+    private AVLTreeNode keepBalance(AVLTreeNode root) {
         if (!isBalance(root)) {
             // not balance, then keep balance
             if (getBalanceFactor(root) > 0) { // LL or LR
@@ -91,7 +96,56 @@ public class AVLTree {
     // delete operation
 
     public void Delete(int key) {
+        root = delete(root, key);
+    }
 
+    private AVLTreeNode delete(AVLTreeNode root, int key) {
+        if (root == null) {
+            return root;
+        }
+        if (root.key > key) {
+            root.left = delete(root.left, key);
+            root = keepBalance(root);
+            return root;
+        } else if (root.key < key) {
+            root.right = delete(root.right, key);
+            root =keepBalance(root);
+            return root;
+        }
+        if (root.left == null && root.right == null) {
+            // condition 1: deleted node has no children
+            return null;
+        }
+        if (root.right == null) {
+            // condition 2: deleted node only has left child
+            return root.left;
+        }
+        if (root.left == null) {
+            // condition 3: deleted node only has right child
+            return root.right;
+        }
+        if (root.right.left == null) {
+            // condition 4.1: the right child of the deleted node only has right child
+            root.right.left = root.left;
+            return root.right;
+        }
+        // condition 4.2: the right child of the deleted node has left and right children
+        AVLTreeNode[] smallestContainer = new AVLTreeNode[1];
+        AVLTreeNode newRoot = deleteSmallest(root, smallestContainer);
+        newRoot.left = root.left;
+        newRoot.right = root.right;
+        keepBalance(newRoot);
+        return newRoot;
+    }
+
+    private AVLTreeNode deleteSmallest(AVLTreeNode root, AVLTreeNode[] smallestContainer) {
+        if (root.left == null) {
+            smallestContainer[0] = root;
+            return root.right;
+        }
+        root.left = deleteSmallest(root.left, smallestContainer);
+        keepBalance(root);
+        return root;
     }
 
     // query operation
