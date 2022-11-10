@@ -110,8 +110,6 @@ public class AVLTree {
         return root;
     }
 
-
-
     // delete operation
 
     public void Delete(int key) {
