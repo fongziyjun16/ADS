@@ -19,6 +19,61 @@ public class AVLTree {
         }
     }
 
+    // basic operations
+    private int getHeight(AVLTreeNode root) {
+        return root == null ? 0 : root.height;
+    }
+
+    private int getBalanceFactor(AVLTreeNode root) {
+        return getHeight(root.left) - getHeight(root.right);
+    }
+
+    private void updateHeight(AVLTreeNode root) {
+        root.height = Math.max(getHeight(root.left), getHeight(root.right)) + 1;
+    }
+
+    private AVLTreeNode rightRotate(AVLTreeNode root) {
+        AVLTreeNode leftChild = root.left;
+
+        root.left = leftChild.right;
+        updateHeight(root);
+
+        leftChild.right = root;
+        updateHeight(leftChild);
+        return leftChild;
+    }
+
+    private AVLTreeNode leftRotate(AVLTreeNode root) {
+        AVLTreeNode rightChild = root.right;
+
+        root.right = rightChild.left;
+        updateHeight(root);
+
+        rightChild.left = root;
+        updateHeight(rightChild);
+        return rightChild;
+    }
+
+    // self verification
+    public boolean IsAVLTree() {
+        return isAVLTree(root);
+    }
+
+    private boolean isAVLTree(AVLTreeNode root) {
+        if (root == null) {
+            return true;
+        }
+        boolean left = isAVLTree(root.left);
+        if (!left) {
+            return false;
+        }
+        boolean right = isAVLTree(root.right);
+        if (!right) {
+            return false;
+        }
+        return Math.abs(getBalanceFactor(root)) <= 1;
+    }
+
     // insert operation
 
     public void Insert(int key) {
@@ -29,69 +84,33 @@ public class AVLTree {
         if (root == null) {
             return new AVLTreeNode(key);
         }
+        if (key == root.key) {
+            return root;
+        }
         if (key < root.key) {
             root.left = insert(root.left, key);
-        } else {
+        } else { // key < root.key
             root.right = insert(root.right, key);
         }
-        root = keepBalance(root);
-        return root;
-    }
-
-    private AVLTreeNode keepBalance(AVLTreeNode root) {
-        if (!isBalance(root)) {
-            // not balance, then keep balance
-            if (getBalanceFactor(root) > 0) { // LL or LR
-                if (getBalanceFactor(root.left) > 0) { // LL
-                    root = rightRotate(root);
-                } else { // LR
+        updateHeight(root);
+        int bf = getBalanceFactor(root);
+        if (Math.abs(bf) > 1) {
+            if (bf > 1) {
+                if (getBalanceFactor(root.left) == -1) {
                     root.left = leftRotate(root.left);
-                    root = rightRotate(root);
                 }
-            } else { // RR or RL
-                if (getBalanceFactor(root.right) < 0) { // RR
-                    root = leftRotate(root);
-                } else { // RL
+                root = rightRotate(root);
+            } else {
+                if (getBalanceFactor(root.right) == 1) {
                     root.right = rightRotate(root.right);
-                    root = leftRotate(root);
                 }
+                root = leftRotate(root);
             }
         }
-        updateHeight(root);
         return root;
     }
 
-    private boolean isBalance(AVLTreeNode root) {
-        return getBalanceFactor(root) <= 1;
-    }
 
-    private int getBalanceFactor(AVLTreeNode root) {
-        return Math.abs((root.left == null ? 0 : root.left.height) - (root.right == null ? 0 : root.right.height));
-    }
-
-    private void updateHeight(AVLTreeNode root) {
-        root.height = Math.max(root.left == null ? 0 : root.left.height, root.right == null ? 0 : root.right.height) + 1;
-    }
-
-    private AVLTreeNode rightRotate(AVLTreeNode root) {
-        AVLTreeNode newRoot = root.left;
-        AVLTreeNode leftRight = root.left.right;
-        newRoot.right = root;
-        root.left = leftRight;
-        updateHeight(root);
-        updateHeight(newRoot);
-        return newRoot;
-    }
-
-    private AVLTreeNode leftRotate(AVLTreeNode root) {
-        AVLTreeNode newRoot = root.right;
-        AVLTreeNode rightLeft = root.right.left;
-        newRoot.left = root;
-        root.right = rightLeft;
-        updateHeight(root);
-        updateHeight(newRoot);
-        return newRoot;
-    }
 
     // delete operation
 
@@ -105,11 +124,11 @@ public class AVLTree {
         }
         if (root.key > key) {
             root.left = delete(root.left, key);
-            root = keepBalance(root);
+            // root = keepBalance(root);
             return root;
         } else if (root.key < key) {
             root.right = delete(root.right, key);
-            root =keepBalance(root);
+            // root =keepBalance(root);
             return root;
         }
         if (root.left == null && root.right == null) {
@@ -134,7 +153,7 @@ public class AVLTree {
         AVLTreeNode newRoot = deleteSmallest(root, smallestContainer);
         newRoot.left = root.left;
         newRoot.right = root.right;
-        keepBalance(newRoot);
+        // keepBalance(newRoot);
         return newRoot;
     }
 
@@ -144,7 +163,7 @@ public class AVLTree {
             return root.right;
         }
         root.left = deleteSmallest(root.left, smallestContainer);
-        keepBalance(root);
+        // keepBalance(root);
         return root;
     }
 
@@ -158,7 +177,7 @@ public class AVLTree {
         } else {
             result = String.valueOf(node.key);
         }
-        append2OutputFile(result);
+        print(result);
         return result;
     }
 
@@ -186,7 +205,7 @@ public class AVLTree {
             }
             result = sb.toString();
         }
-        append2OutputFile(result);
+        print(result);
         return result;
     }
 
@@ -205,16 +224,12 @@ public class AVLTree {
         }
     }
 
-    private void append2OutputFile(String newline) {
+    private void print(String newline) {
         try (FileWriter writer = new FileWriter(outputFilename, true);) {
             writer.write(newline + "\n");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public static void main(String[] args) {
-
     }
 
 }
