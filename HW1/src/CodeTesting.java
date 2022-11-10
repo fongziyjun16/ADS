@@ -33,7 +33,7 @@ public class CodeTesting {
             avlTree.Initialize();
             for (Integer number : randomNumbers) {
                 avlTree.Insert(number);
-                if (!avlTree.IsAVLTree()) {
+                if (!avlTree.IsValid()) {
                     error++;
                     break;
                 }
@@ -48,7 +48,39 @@ public class CodeTesting {
         System.out.println("success: " + success + "; error: " + error);
     }
 
+    public static void deleteTest() {
+        int time = 25;
+        int curr = 1;
+        int error = 0;
+        while (curr <= time) {
+            List<Integer> randomNumbers = getRandomNumbers(1, 4000, 3600);
+            AVLTree avlTree = new AVLTree();
+            avlTree.Initialize();
+            for (Integer number : randomNumbers) {
+                avlTree.Insert(number);
+            }
+
+            Random random = new Random();
+            int deletingNumber = random.nextInt(randomNumbers.size());
+            while (deletingNumber != 0) {
+                avlTree.Delete(randomNumbers.get(random.nextInt(randomNumbers.size())));
+                if (!avlTree.IsValid()) {
+                    error++;
+                    break;
+                }
+                deletingNumber--;
+            }
+
+            if (curr % 5 == 0) {
+                System.out.println(" finishes " + curr);
+            }
+            curr++;
+        }
+        System.out.println( " error: " + error);
+    }
+
     public static void main(String[] args) {
-//        insertTest();
+        insertTest();
+//        deleteTest();
     }
 }

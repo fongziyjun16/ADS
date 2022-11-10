@@ -24,12 +24,12 @@ public class AVLTree {
         return root == null ? 0 : root.height;
     }
 
-    private int getBalanceFactor(AVLTreeNode root) {
-        return getHeight(root.left) - getHeight(root.right);
-    }
-
     private void updateHeight(AVLTreeNode root) {
         root.height = Math.max(getHeight(root.left), getHeight(root.right)) + 1;
+    }
+
+    private int getBalanceFactor(AVLTreeNode root) {
+        return getHeight(root.left) - getHeight(root.right);
     }
 
     private AVLTreeNode rightRotate(AVLTreeNode root) {
@@ -54,20 +54,66 @@ public class AVLTree {
         return rightChild;
     }
 
-    // self verification
-    public boolean IsAVLTree() {
-        return isAVLTree(root);
+    private AVLTreeNode keepBalance(AVLTreeNode root) {
+        int bf = getBalanceFactor(root);
+        if (Math.abs(bf) > 1) {
+            if (bf > 1) {
+                if (getBalanceFactor(root.left) == -1) {
+                    root.left = leftRotate(root.left);
+                    updateHeight(root);
+                }
+                root = rightRotate(root);
+            } else {
+                if (getBalanceFactor(root.right) == 1) {
+                    root.right = rightRotate(root.right);
+                    updateHeight(root);
+                }
+                root = leftRotate(root);
+            }
+        }
+        return root;
     }
 
-    private boolean isAVLTree(AVLTreeNode root) {
+    // is AVL tree verification
+    public boolean IsValid() {
+        return isAscending(root) && isBalance(root);
+    }
+
+    private boolean isAscending(AVLTreeNode root) {
+        List<Integer> list = new ArrayList<>();
+        Deque<AVLTreeNode> stack = new ArrayDeque<>();
+
+        stack.offerLast(root);
+        AVLTreeNode next = root.left;
+        while (next != null || !stack.isEmpty()) {
+            if (next == null) {
+                AVLTreeNode curr = stack.pollLast();
+                list.add(curr.key);
+                next = curr.right;
+            } else {
+                stack.offerLast(next);
+                next = next.left;
+            }
+        }
+
+        for (int i = 1; i < list.size(); i++) {
+            if (list.get(i) < list.get(i - 1)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private boolean isBalance(AVLTreeNode root) {
         if (root == null) {
             return true;
         }
-        boolean left = isAVLTree(root.left);
+        boolean left = isBalance(root.left);
         if (!left) {
             return false;
         }
-        boolean right = isAVLTree(root.right);
+        boolean right = isBalance(root.right);
         if (!right) {
             return false;
         }
@@ -93,21 +139,7 @@ public class AVLTree {
             root.right = insert(root.right, key);
         }
         updateHeight(root);
-        int bf = getBalanceFactor(root);
-        if (Math.abs(bf) > 1) {
-            if (bf > 1) {
-                if (getBalanceFactor(root.left) == -1) {
-                    root.left = leftRotate(root.left);
-                }
-                root = rightRotate(root);
-            } else {
-                if (getBalanceFactor(root.right) == 1) {
-                    root.right = rightRotate(root.right);
-                }
-                root = leftRotate(root);
-            }
-        }
-        return root;
+        return keepBalance(root);
     }
 
     // delete operation
@@ -118,41 +150,51 @@ public class AVLTree {
 
     private AVLTreeNode delete(AVLTreeNode root, int key) {
         if (root == null) {
-            return root;
+            return null;
         }
         if (root.key > key) {
             root.left = delete(root.left, key);
-            // root = keepBalance(root);
-            return root;
+            updateHeight(root);
+            return keepBalance(root);
         } else if (root.key < key) {
             root.right = delete(root.right, key);
-            // root =keepBalance(root);
-            return root;
+            updateHeight(root);
+            return keepBalance(root);
         }
+
+        // condition 1: deleted node has no children
         if (root.left == null && root.right == null) {
-            // condition 1: deleted node has no children
             return null;
         }
+
+        // condition 2: deleted node only has one child
+        // condition 2.1: deleted node only has left child
         if (root.right == null) {
-            // condition 2: deleted node only has left child
             return root.left;
         }
+
+        // condition 2.2: deleted node only has right child
         if (root.left == null) {
-            // condition 3: deleted node only has right child
             return root.right;
         }
+
+        // condition 4: deleted node has 2 children
+        // condition 4.1: the right node of deleted node only has right child
         if (root.right.left == null) {
-            // condition 4.1: the right child of the deleted node only has right child
-            root.right.left = root.left;
-            return root.right;
+            AVLTreeNode newRoot = root.right;
+            newRoot.left = root.left;
+            updateHeight(newRoot);
+            return keepBalance(newRoot);
         }
-        // condition 4.2: the right child of the deleted node has left and right children
+
+        // condition 4.2: the right node of deleted node has 2 children
         AVLTreeNode[] smallestContainer = new AVLTreeNode[1];
-        AVLTreeNode newRoot = deleteSmallest(root, smallestContainer);
+        deleteSmallest(root.right, smallestContainer);
+        AVLTreeNode newRoot = smallestContainer[0];
         newRoot.left = root.left;
         newRoot.right = root.right;
-        // keepBalance(newRoot);
-        return newRoot;
+        updateHeight(newRoot);
+        return keepBalance(newRoot);
     }
 
     private AVLTreeNode deleteSmallest(AVLTreeNode root, AVLTreeNode[] smallestContainer) {
@@ -161,8 +203,8 @@ public class AVLTree {
             return root.right;
         }
         root.left = deleteSmallest(root.left, smallestContainer);
-        // keepBalance(root);
-        return root;
+        updateHeight(root);
+        return keepBalance(root);
     }
 
     // query operation
