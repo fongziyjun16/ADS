@@ -1,3 +1,5 @@
+import tree.AVLTree;
+
 import java.util.*;
 
 public class CodeTesting {
@@ -30,10 +32,10 @@ public class CodeTesting {
         while (curr <= time) {
             List<Integer> randomNumbers = getRandomNumbers(1, 4000, 3600);
             AVLTree avlTree = new AVLTree();
-            avlTree.Initialize();
+            avlTree.initialize();
             for (Integer number : randomNumbers) {
-                avlTree.Insert(number);
-                if (!avlTree.IsValid()) {
+                avlTree.insert(number);
+                if (!avlTree.isValid()) {
                     error++;
                     break;
                 }
@@ -55,17 +57,17 @@ public class CodeTesting {
         while (curr <= time) {
             List<Integer> randomNumbers = getRandomNumbers(1, 4000, 3600);
             AVLTree avlTree = new AVLTree();
-            avlTree.Initialize();
+            avlTree.initialize();
             for (Integer number : randomNumbers) {
-                avlTree.Insert(number);
+                avlTree.insert(number);
             }
 
             Random random = new Random();
             int deletingNumber = random.nextInt(randomNumbers.size());
             while (deletingNumber != 0) {
                 int deletedElement = randomNumbers.get(random.nextInt(randomNumbers.size()));
-                avlTree.Delete(deletedElement);
-                if (!avlTree.IsValid()) {
+                avlTree.delete(deletedElement);
+                if (!avlTree.isValid()) {
                     error++;
                     break;
                 }
@@ -80,34 +82,9 @@ public class CodeTesting {
         System.out.println( " error: " + error);
     }
 
-    public static void test() {
-        AVLTree avlTree = new AVLTree();
-        avlTree.Initialize();
-        avlTree.Insert(21);
-        avlTree.Insert(108);
-        avlTree.Insert(5);
-        avlTree.Insert(1897);
-        avlTree.Insert(4325);
-        avlTree.Delete(108);
-        avlTree.Search(1897);
-        avlTree.Insert(102);
-        avlTree.Insert(65);
-        avlTree.Delete(102);
-        avlTree.Delete(21);
-        avlTree.Insert(106);
-        avlTree.Insert(23);
-        avlTree.Search(23,99);
-        avlTree.Insert(32);
-        avlTree.Insert(220);
-        avlTree.Search(33);
-        avlTree.Search(21);
-        avlTree.Delete(4325);
-        avlTree.Search(32);
-    }
 
     public static void main(String[] args) {
 //        insertTest();
 //        deleteTest();
-        test();
     }
 }

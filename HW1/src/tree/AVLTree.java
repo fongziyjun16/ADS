@@ -1,3 +1,5 @@
+package tree;
+
 import java.io.*;
 import java.util.*;
 
@@ -6,7 +8,7 @@ public class AVLTree {
     private AVLTreeNode root;
     private final String outputFilename = "output_file.txt";
 
-    public void Initialize() {
+    public void initialize() {
         root = null;
         try {
             File outputFile = new File(outputFilename);
@@ -20,19 +22,28 @@ public class AVLTree {
     }
 
     // basic operations
+
+    // Given a node of AVL tree, and Get its height
     private int getHeight(AVLTreeNode root) {
         return root == null ? 0 : root.height;
     }
 
+    // Given a node of AVL tree, and Update its height
     private void updateHeight(AVLTreeNode root) {
         root.height = Math.max(getHeight(root.left), getHeight(root.right)) + 1;
     }
 
+    // Given a node of AVL tree, and Calculate its balance factor
     private int getBalanceFactor(AVLTreeNode root) {
+        // the height of left subtree - the height of right subtree
         return getHeight(root.left) - getHeight(root.right);
     }
 
+    // right rotation of a node
     private AVLTreeNode rightRotate(AVLTreeNode root) {
+        // Left child becomes the new root
+        // The right child of the left child of the root will become the left child of the root.
+        // The root will become the right child of the left child of the root.
         AVLTreeNode newRoot = root.left;
 
         root.left = newRoot.right;
@@ -43,7 +54,11 @@ public class AVLTree {
         return newRoot;
     }
 
+    // left rotation of a node
     private AVLTreeNode leftRotate(AVLTreeNode root) {
+        // Right child becomes the new root
+        // The left child of the right child of the root will become the right child of the root.
+        // The root will become the left child of the right child of the root.
         AVLTreeNode newRoot = root.right;
 
         root.right = newRoot.left;
@@ -54,20 +69,25 @@ public class AVLTree {
         return newRoot;
     }
 
+    // keep a node balance
     private AVLTreeNode keepBalance(AVLTreeNode root) {
         int bf = getBalanceFactor(root);
-        if (Math.abs(bf) > 1) {
-            if (bf > 1) {
+        if (Math.abs(bf) > 1) { // this node is not balanced
+            if (bf > 1) { // type L
                 if (getBalanceFactor(root.left) < 0) {
+                    // type LR, left rotation of the left child of the root
                     root.left = leftRotate(root.left);
                     updateHeight(root);
                 }
+                // the last step of LL and RR is right rotation of the root
                 root = rightRotate(root);
-            } else {
+            } else { // type R
                 if (getBalanceFactor(root.right) > 0) {
+                    // type RL, right rotation of the right child of the root
                     root.right = rightRotate(root.right);
                     updateHeight(root);
                 }
+                // the last step of RR and RL is left rotation of the root
                 root = leftRotate(root);
             }
         }
@@ -83,7 +103,7 @@ public class AVLTree {
     }
 
     // is AVL tree verification
-    public boolean IsValid() {
+    public boolean isValid() {
         return isBST(root, (long) Integer.MIN_VALUE - 1, (long) Integer.MAX_VALUE + 1) && isBalance(root);
     }
 
@@ -108,11 +128,13 @@ public class AVLTree {
     }
 
     // insert operation
-
-    public void Insert(int key) {
+    public void insert(int key) {
         root = insert(root, key);
     }
 
+    // recursively find the target node having the key.
+    // add new node as a leaf.
+    // trace back re-balance.
     private AVLTreeNode insert(AVLTreeNode root, int key) {
         if (root == null) {
             return new AVLTreeNode(key);
@@ -130,11 +152,13 @@ public class AVLTree {
     }
 
     // delete operation
-
-    public void Delete(int key) {
+    public void delete(int key) {
         root = delete(root, key);
     }
 
+    // recursively find the target node having the key.
+    // delete the node.
+    // trace back re-balance.
     private AVLTreeNode delete(AVLTreeNode root, int key) {
         if (root == null) {
             return null;
@@ -196,7 +220,7 @@ public class AVLTree {
 
     // query operation
 
-    public String Search(int key) {
+    public String search(int key) {
         AVLTreeNode node = search(root, key);
         String result = "";
         if (node == null) {
@@ -215,7 +239,7 @@ public class AVLTree {
         return root.key > key ? search(root.left, key) : search(root.right, key);
     }
 
-    public String Search(int key1, int key2) {
+    public String search(int key1, int key2) {
         List<Integer> list = new ArrayList<>();
         search(root, key1, key2, list);
         String result = "";
@@ -250,16 +274,5 @@ public class AVLTree {
             search(root.right, key1, key2, list);
         }
     }
-}
 
-class AVLTreeNode {
-    int key;
-    int height;
-    AVLTreeNode left;
-    AVLTreeNode right;
-
-    public AVLTreeNode(int key) {
-        this.key = key;
-        height = 1;
-    }
 }
