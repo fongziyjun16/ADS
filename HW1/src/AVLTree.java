@@ -33,38 +33,38 @@ public class AVLTree {
     }
 
     private AVLTreeNode rightRotate(AVLTreeNode root) {
-        AVLTreeNode leftChild = root.left;
+        AVLTreeNode newRoot = root.left;
 
-        root.left = leftChild.right;
+        root.left = newRoot.right;
         updateHeight(root);
 
-        leftChild.right = root;
-        updateHeight(leftChild);
-        return leftChild;
+        newRoot.right = root;
+        updateHeight(newRoot);
+        return newRoot;
     }
 
     private AVLTreeNode leftRotate(AVLTreeNode root) {
-        AVLTreeNode rightChild = root.right;
+        AVLTreeNode newRoot = root.right;
 
-        root.right = rightChild.left;
+        root.right = newRoot.left;
         updateHeight(root);
 
-        rightChild.left = root;
-        updateHeight(rightChild);
-        return rightChild;
+        newRoot.left = root;
+        updateHeight(newRoot);
+        return newRoot;
     }
 
     private AVLTreeNode keepBalance(AVLTreeNode root) {
         int bf = getBalanceFactor(root);
         if (Math.abs(bf) > 1) {
             if (bf > 1) {
-                if (getBalanceFactor(root.left) == -1) {
+                if (getBalanceFactor(root.left) < 0) {
                     root.left = leftRotate(root.left);
                     updateHeight(root);
                 }
                 root = rightRotate(root);
             } else {
-                if (getBalanceFactor(root.right) == 1) {
+                if (getBalanceFactor(root.right) > 0) {
                     root.right = rightRotate(root.right);
                     updateHeight(root);
                 }
@@ -74,50 +74,37 @@ public class AVLTree {
         return root;
     }
 
-    // is AVL tree verification
-    public boolean IsValid() {
-        return isAscending(root) && isBalance(root);
+    private void print(String newline) {
+        try (FileWriter writer = new FileWriter(outputFilename, true);) {
+            writer.write(newline + "\n");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    private boolean isAscending(AVLTreeNode root) {
-        List<Integer> list = new ArrayList<>();
-        Deque<AVLTreeNode> stack = new ArrayDeque<>();
+    // is AVL tree verification
+    public boolean IsValid() {
+        return isBST(root, (long) Integer.MIN_VALUE - 1, (long) Integer.MAX_VALUE + 1) && isBalance(root);
+    }
 
-        stack.offerLast(root);
-        AVLTreeNode next = root.left;
-        while (next != null || !stack.isEmpty()) {
-            if (next == null) {
-                AVLTreeNode curr = stack.pollLast();
-                list.add(curr.key);
-                next = curr.right;
-            } else {
-                stack.offerLast(next);
-                next = next.left;
-            }
+    private boolean isBST(AVLTreeNode root, long min, long max) {
+        if (root == null) {
+            return true;
         }
-
-        for (int i = 1; i < list.size(); i++) {
-            if (list.get(i) < list.get(i - 1)) {
-                return false;
-            }
+        if (root.key <= min || root.key >= max) {
+            return false;
         }
-
-        return true;
+        return isBST(root.left, min, root.key) && isBST(root.right, root.key, max);
     }
 
     private boolean isBalance(AVLTreeNode root) {
         if (root == null) {
             return true;
         }
-        boolean left = isBalance(root.left);
-        if (!left) {
+        if (Math.abs(getBalanceFactor(root)) > 1) {
             return false;
         }
-        boolean right = isBalance(root.right);
-        if (!right) {
-            return false;
-        }
-        return Math.abs(getBalanceFactor(root)) <= 1;
+        return isBalance(root.left) && isBalance(root.right);
     }
 
     // insert operation
@@ -189,10 +176,10 @@ public class AVLTree {
 
         // condition 4.2: the right node of deleted node has 2 children
         AVLTreeNode[] smallestContainer = new AVLTreeNode[1];
-        deleteSmallest(root.right, smallestContainer);
+        AVLTreeNode newRight = deleteSmallest(root.right, smallestContainer);
         AVLTreeNode newRoot = smallestContainer[0];
         newRoot.left = root.left;
-        newRoot.right = root.right;
+        newRoot.right = newRight;
         updateHeight(newRoot);
         return keepBalance(newRoot);
     }
@@ -253,25 +240,16 @@ public class AVLTree {
         if (root == null) {
             return ;
         }
-        if (root.key >= key1) {
+        if (key1 <= root.key) {
             search(root.left, key1, key2, list);
         }
-        if (root.key >= key1 && root.key <= key2) {
+        if (key1 <= root.key && key2 >= root.key) {
             list.add(root.key);
         }
-        if (root.key <= key2) {
+        if (key2 >= root.key) {
             search(root.right, key1, key2, list);
         }
     }
-
-    private void print(String newline) {
-        try (FileWriter writer = new FileWriter(outputFilename, true);) {
-            writer.write(newline + "\n");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
 }
 
 class AVLTreeNode {

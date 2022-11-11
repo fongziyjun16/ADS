@@ -49,7 +49,7 @@ public class CodeTesting {
     }
 
     public static void deleteTest() {
-        int time = 25;
+        int time = 1000;
         int curr = 1;
         int error = 0;
         while (curr <= time) {
@@ -63,7 +63,8 @@ public class CodeTesting {
             Random random = new Random();
             int deletingNumber = random.nextInt(randomNumbers.size());
             while (deletingNumber != 0) {
-                avlTree.Delete(randomNumbers.get(random.nextInt(randomNumbers.size())));
+                int deletedElement = randomNumbers.get(random.nextInt(randomNumbers.size()));
+                avlTree.Delete(deletedElement);
                 if (!avlTree.IsValid()) {
                     error++;
                     break;
@@ -79,8 +80,34 @@ public class CodeTesting {
         System.out.println( " error: " + error);
     }
 
+    public static void test() {
+        AVLTree avlTree = new AVLTree();
+        avlTree.Initialize();
+        avlTree.Insert(21);
+        avlTree.Insert(108);
+        avlTree.Insert(5);
+        avlTree.Insert(1897);
+        avlTree.Insert(4325);
+        avlTree.Delete(108);
+        avlTree.Search(1897);
+        avlTree.Insert(102);
+        avlTree.Insert(65);
+        avlTree.Delete(102);
+        avlTree.Delete(21);
+        avlTree.Insert(106);
+        avlTree.Insert(23);
+        avlTree.Search(23,99);
+        avlTree.Insert(32);
+        avlTree.Insert(220);
+        avlTree.Search(33);
+        avlTree.Search(21);
+        avlTree.Delete(4325);
+        avlTree.Search(32);
+    }
+
     public static void main(String[] args) {
-        insertTest();
+//        insertTest();
 //        deleteTest();
+        test();
     }
 }
