@@ -1,4 +1,5 @@
 import tree.AVLTree;
+import tree.AVLTreeNode;
 
 import java.util.*;
 
@@ -35,7 +36,7 @@ public class CodeTesting {
             avlTree.initialize();
             for (Integer number : randomNumbers) {
                 avlTree.insert(number);
-                if (!avlTree.isValid()) {
+                if (!AVLTreeUtils.isValid(avlTree)) {
                     error++;
                     break;
                 }
@@ -67,7 +68,7 @@ public class CodeTesting {
             while (deletingNumber != 0) {
                 int deletedElement = randomNumbers.get(random.nextInt(randomNumbers.size()));
                 avlTree.delete(deletedElement);
-                if (!avlTree.isValid()) {
+                if (!AVLTreeUtils.isValid(avlTree)) {
                     error++;
                     break;
                 }

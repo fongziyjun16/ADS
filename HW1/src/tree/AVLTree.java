@@ -8,6 +8,9 @@ public class AVLTree {
     private AVLTreeNode root;
     private final String outputFilename = "output_file.txt";
 
+    /**
+     * initial operation about creating output file
+     */
     public void initialize() {
         root = null;
         try {
@@ -21,25 +24,35 @@ public class AVLTree {
         }
     }
 
-    // basic operations
+    /**
+     * basic operations
+     */
 
-    // Given a node of AVL tree, and Get its height
+    /**
+     * Given a node of AVL tree, and Get its height
+     */
     private int getHeight(AVLTreeNode root) {
         return root == null ? 0 : root.height;
     }
 
-    // Given a node of AVL tree, and Update its height
+    /**
+     * Given a node of AVL tree, and Update its height
+     */
     private void updateHeight(AVLTreeNode root) {
         root.height = Math.max(getHeight(root.left), getHeight(root.right)) + 1;
     }
 
-    // Given a node of AVL tree, and Calculate its balance factor
+    /**
+     * Given a node of AVL tree, and Calculate its balance factor
+     */
     private int getBalanceFactor(AVLTreeNode root) {
         // the height of left subtree - the height of right subtree
         return getHeight(root.left) - getHeight(root.right);
     }
 
-    // right rotation of a node
+    /**
+     * right rotation of a node
+     */
     private AVLTreeNode rightRotate(AVLTreeNode root) {
         // Left child becomes the new root
         // The right child of the left child of the root will become the left child of the root.
@@ -54,7 +67,9 @@ public class AVLTree {
         return newRoot;
     }
 
-    // left rotation of a node
+    /**
+     * left rotation of a node
+     */
     private AVLTreeNode leftRotate(AVLTreeNode root) {
         // Right child becomes the new root
         // The left child of the right child of the root will become the right child of the root.
@@ -69,7 +84,9 @@ public class AVLTree {
         return newRoot;
     }
 
-    // keep a node balance
+    /**
+     * keep a node balance
+     */
     private AVLTreeNode keepBalance(AVLTreeNode root) {
         int bf = getBalanceFactor(root);
         if (Math.abs(bf) > 1) { // this node is not balanced
@@ -94,71 +111,72 @@ public class AVLTree {
         return root;
     }
 
+    /**
+     * print result to output file
+     */
     private void print(String newline) {
-        try (FileWriter writer = new FileWriter(outputFilename, true);) {
+        try (FileWriter writer = new FileWriter(outputFilename, true)) {
             writer.write(newline + "\n");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    // is AVL tree verification
-    public boolean isValid() {
-        return isBST(root, (long) Integer.MIN_VALUE - 1, (long) Integer.MAX_VALUE + 1) && isBalance(root);
+    public AVLTreeNode getRoot() {
+        return root;
     }
 
-    private boolean isBST(AVLTreeNode root, long min, long max) {
-        if (root == null) {
-            return true;
-        }
-        if (root.key <= min || root.key >= max) {
-            return false;
-        }
-        return isBST(root.left, min, root.key) && isBST(root.right, root.key, max);
-    }
+    /**
+     * Insert Operation
+     */
 
-    private boolean isBalance(AVLTreeNode root) {
-        if (root == null) {
-            return true;
-        }
-        if (Math.abs(getBalanceFactor(root)) > 1) {
-            return false;
-        }
-        return isBalance(root.left) && isBalance(root.right);
-    }
-
-    // insert operation
+    /**
+     * Given a key, Insert it into AVL Tree (search + insert + re-balance)
+     */
     public void insert(int key) {
         root = insert(root, key);
     }
 
-    // recursively find the target node having the key.
-    // add new node as a leaf.
-    // trace back re-balance.
+    /**
+     * Actual Insert Operation:
+     * 1. Recursively find the target node having the key.
+     * 2. add new node as a leaf.
+     * 3. trace back re-balance.
+     */
     private AVLTreeNode insert(AVLTreeNode root, int key) {
         if (root == null) {
             return new AVLTreeNode(key);
         }
-        if (key == root.key) {
+        if (key == root.key) { // find an existing node
             return root;
         }
-        if (key < root.key) {
+        if (key < root.key) { // target node may be in left subtree
             root.left = insert(root.left, key);
         } else { // key < root.key
+            // target node may be in right subtree
             root.right = insert(root.right, key);
         }
         updateHeight(root);
         return keepBalance(root);
     }
 
-    // delete operation
+    /**
+     * Delete Operation
+     */
+
+    /**
+     * Given a key, Delete it from AVL Tree (search + delete + re-balance)
+     */
     public void delete(int key) {
         root = delete(root, key);
     }
 
-    // recursively find the target node having the key.
-    // delete the node.
-    // trace back re-balance.
+    /**
+     * Actual Delete Operation:
+     * Recursively find the target node having the key.
+     * Delete the node.
+     * Trace back re-balance.
+     */
     private AVLTreeNode delete(AVLTreeNode root, int key) {
         if (root == null) {
             return null;
@@ -208,18 +226,31 @@ public class AVLTree {
         return keepBalance(newRoot);
     }
 
+    /**
+     * Delete the smallest node when the deleted node has 2 children and the right child of it has 2 children:
+     * (Find the inorder successor)
+     * 1. Recursively find the smallest node of a given tree.
+     * 2. Delete the leaf node.
+     * 3. Trace back re-balance.
+     */
     private AVLTreeNode deleteSmallest(AVLTreeNode root, AVLTreeNode[] smallestContainer) {
         if (root.left == null) {
             smallestContainer[0] = root;
             return root.right;
         }
+        // the smallest node is in the left subtree
         root.left = deleteSmallest(root.left, smallestContainer);
         updateHeight(root);
         return keepBalance(root);
     }
 
-    // query operation
+    /**
+     * Query Operations
+     */
 
+    /**
+     * Query Operations for Specific Key
+     */
     public String search(int key) {
         AVLTreeNode node = search(root, key);
         String result = "";
@@ -232,6 +263,9 @@ public class AVLTree {
         return result;
     }
 
+    /**
+     * Binary Search the Specific Key
+     */
     private AVLTreeNode search(AVLTreeNode root, int key) {
         if (root == null || root.key == key) {
             return root;
@@ -239,6 +273,9 @@ public class AVLTree {
         return root.key > key ? search(root.left, key) : search(root.right, key);
     }
 
+    /**
+     * Query Operations for Keys in Specific Range
+     */
     public String search(int key1, int key2) {
         List<Integer> list = new ArrayList<>();
         search(root, key1, key2, list);
@@ -260,17 +297,23 @@ public class AVLTree {
         return result;
     }
 
+    /**
+     * Binary Search Keys in Specific Range
+     */
     private void search(AVLTreeNode root, int key1, int key2, List<Integer> list) {
         if (root == null) {
             return ;
         }
         if (key1 <= root.key) {
+            // there are nodes in the given range in the left subtree
             search(root.left, key1, key2, list);
         }
         if (key1 <= root.key && key2 >= root.key) {
+            // current node is in the range, add to result list
             list.add(root.key);
         }
         if (key2 >= root.key) {
+            // there are nodes in the given range in the right subtree
             search(root.right, key1, key2, list);
         }
     }
