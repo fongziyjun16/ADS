@@ -10,7 +10,7 @@ UF Email account: yingjie.chen@ufl.edu
 
 ## Function Prototypes
 
-The program functions mainly include 4 parts: **Basic Operations**, **Insert**, **Insert**, **Delete**, and **Search**.
+The program functions mainly include 4 parts: **Basic Operations**, **Initialize**, **Insert**, **Delete**, and **Search**.
 
 ### Node Structure
 
@@ -38,6 +38,9 @@ public void initialize()
 ### Encapsulated Class
 
 ```java
+/**
+ * The Implementation of AVL Tree
+ */
 class SelfBalancedBinarySearchTree {
 
     private AVLTreeNode root;
@@ -99,7 +102,7 @@ class SelfBalancedBinarySearchTree {
 
 ### Basic Operations
 
-In this part, there are several basic operations needed during **Insert**, **Insert**, **Delete**, and **Search**.
+In this part, there are several basic operations needed during **Insert**, **Delete**, and **Search**.
 
 #### Get Height
 
@@ -198,7 +201,7 @@ private AVLTreeNode delete(AVLTreeNode root, int key)
 
 ### Search
 
-#### Search Specific Value
+#### Search a Specific Value
 
 Using binary search to search the specific key.
 
@@ -235,17 +238,18 @@ All files will be in the folder.
 ```
 .
 ├── avltree.java
-├── input_file.txt
 ├── Makefile
 └── REPORT.pdf
 ```
 
 #### Source Code
 
-- `avltree.java` is the entering point running the operation of `AVLTree`. This file includes the source code of `AVLTree`
+- `avltree.java` is the entering point for running the operation of `AVLTree`. This file includes the source code of `AVLTree`.
 
   ```java
   public class avltree {
+      // entering point for running the operation of AVLTree
+      // including intepreting the input file
       ...
   }
   
@@ -298,7 +302,7 @@ All files will be in the folder.
   Search(32)
   ```
 
-- Copy the file into the folder `AVLTree`
+- Copy the file into the folder containing compiled java `.class` files.
 
 ### Running
 

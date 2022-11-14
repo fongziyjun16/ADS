@@ -8,6 +8,7 @@ public class avltree {
         FileInputStream inputStream = new FileInputStream(filename);
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
         String line = null;
+        // input file interpretation
         while ((line = reader.readLine()) != null) {
             int p1 = line.indexOf('(');
             String command = line.substring(0, p1);
