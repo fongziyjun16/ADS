@@ -1,6 +1,3 @@
-import tree.AVLTree;
-import tree.AVLTreeNode;
-
 public class AVLTreeUtils {
 
     public static int getBalanceFactor(AVLTreeNode root) {
@@ -12,7 +9,7 @@ public class AVLTreeUtils {
         return root == null ? 0 : root.height;
     }
 
-    public static boolean isValid(AVLTree avlTree) {
+    public static boolean isValid(SelfBalancedBinarySearchTree avlTree) {
         AVLTreeNode root = avlTree.getRoot();
         return isBST(avlTree.getRoot(), (long) Integer.MIN_VALUE - 1, (long) Integer.MAX_VALUE + 1) && isBalance(root);
     }

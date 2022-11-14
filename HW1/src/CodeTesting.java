@@ -1,6 +1,3 @@
-import tree.AVLTree;
-import tree.AVLTreeNode;
-
 import java.util.*;
 
 public class CodeTesting {
@@ -32,7 +29,7 @@ public class CodeTesting {
         int error = 0;
         while (curr <= time) {
             List<Integer> randomNumbers = getRandomNumbers(1, 4000, 3600);
-            AVLTree avlTree = new AVLTree();
+            SelfBalancedBinarySearchTree avlTree = new SelfBalancedBinarySearchTree();
             avlTree.initialize();
             for (Integer number : randomNumbers) {
                 avlTree.insert(number);
@@ -57,7 +54,7 @@ public class CodeTesting {
         int error = 0;
         while (curr <= time) {
             List<Integer> randomNumbers = getRandomNumbers(1, 4000, 3600);
-            AVLTree avlTree = new AVLTree();
+            SelfBalancedBinarySearchTree avlTree = new SelfBalancedBinarySearchTree();
             avlTree.initialize();
             for (Integer number : randomNumbers) {
                 avlTree.insert(number);
